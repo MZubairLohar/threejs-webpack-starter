@@ -3,8 +3,11 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'dat.gui'
 
+const textureLoader = new THREE.TextureLoader();
+const normalTexture = textureLoader.load('/texture/NormalMa.png')
+
 // Debug
-const gui = new dat.GUI()
+// const gui = new dat.GUI()
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -13,23 +16,26 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 // Objects
-const geometry = new THREE.TorusGeometry( .7, .2, 16, 100 );
+const SphereGeo = new THREE.SphereGeometry( .5, 64, 64);
 
 // Materials
 
-const material = new THREE.MeshBasicMaterial()
-material.color = new THREE.Color(0xff0000)
+const material = new THREE.MeshStandardMaterial();
+// material.roughness = 0.2;
+// material.metalness = 0.1;
+material.normalMap = normalTexture;
+material.color = new THREE.Color(0xffffff)
 
 // Mesh
-const sphere = new THREE.Mesh(geometry,material)
+const sphere = new THREE.Mesh(SphereGeo,material)
 scene.add(sphere)
 
 // Lights
 
-const pointLight = new THREE.PointLight(0xffffff, 0.1)
+const pointLight = new THREE.PointLight(0xffffff, 0.9)
 pointLight.position.x = 2
-pointLight.position.y = 3
-pointLight.position.z = 4
+pointLight.position.y = 9
+pointLight.position.z = 12
 scene.add(pointLight)
 
 /**
@@ -66,17 +72,20 @@ camera.position.z = 2
 scene.add(camera)
 
 // Controls
-// const controls = new OrbitControls(camera, canvas)
-// controls.enableDamping = true
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true
 
 /**
  * Renderer
  */
 const renderer = new THREE.WebGLRenderer({
-    canvas: canvas
+    canvas: canvas,
+    alpha: true,
 })
 renderer.setSize(sizes.width, sizes.height)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+
 
 /**
  * Animate
@@ -93,13 +102,19 @@ const tick = () =>
     sphere.rotation.y = .5 * elapsedTime
 
     // Update Orbital Controls
-    // controls.update()
+    controls.update()
 
     // Render
     renderer.render(scene, camera)
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
+
+    // camera.position.set( 0, 20, 100 );
+    // control.update();
 }
 
 tick()
+
+// camera.position.set( 0, 20, 100 );
+// control.update();
